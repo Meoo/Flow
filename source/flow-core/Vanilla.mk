@@ -2,7 +2,7 @@
 FLOW-CORE-DIR := $(call my-dir)
 FLOW-CORE-BIN := $(call my-bin-dir)
 
-FLOW-CORE-EXE := $(FLOW-CORE-BIN)/flow.exe
+FLOW-CORE-EXE := $(BIN-DIR)/flow.exe
 FLOW-CORE-OBJS := $(FLOW-CORE-BIN)/main/VanillaMain.o
 
 FLOW-CORE-CFLAGS := $(CXXFLAGS) -MMD $(SDL2-INC)
@@ -36,8 +36,7 @@ $(FLOW-CORE-EXE): $(FLOW-CORE-OBJS)
 	$(CXX) -o $@ $^ $(FLOW-CORE-LDFLAGS)
 
 clean-flow-core:
-	$(call c-rm,$(FLOW-CORE-OBJS))
-	$(call c-rm,$(FLOW-CORE-EXE))
+	$(call c-rm,$(FLOW-CORE-OBJS) $(FLOW-CORE-EXE))
 
 FLOW-BUILD-DEPS += $(FLOW-CORE-EXE)
 FLOW-CLEAN-DEPS += clean-flow-core

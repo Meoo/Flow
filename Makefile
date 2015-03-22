@@ -1,32 +1,5 @@
 
-ifdef ComSpec
-  # Windows
-  export c-wpath = $(subst /,\,$1)
-  export c-wifexist = if exist $2 $1 $2
-  export c-wifnexist = if not exist $2 $1 $2
-  export c-copy-struct = xcopy /T $(call c-wpath,$1) $(call c-wpath,$2)
-
-else
-  # Unix
-  export c-copy-struct = cd $1 && find . -type d -exec mkdir -p -- $2/{} \;
-
-endif
-
-ifneq (sh,$(findstring sh,$(shell echo $$BASH)))
-  # No shell (windows only)
-  export c-mkdir = $(call c-wifnexist,mkdir,$(call c-wpath,$1))
-  export c-rm = $(call c-wifexist,del /Q,$(call c-wpath,$1))
-  export c-rmr = $(call c-wifexist,del /S/Q,$(call c-wpath,$1))
-  export c-cp = copy /B $(call c-wpath,$1) $(call c-wpath,$2)
-
-else
-  # Shell
-  export c-mkdir = mkdir -p -- $1
-  export c-rm = rm -f -- $1
-  export c-rmr = rm -rf -- $1
-  export c-cp = cp -- $1 $2
-
-endif
+include Platform.mk
 
 
 BIN-DIR := $(CURDIR)/bin
@@ -63,19 +36,6 @@ help:
 	@echo.
 	@echo  - purge
 	@echo.
-
-
-ifeq ($(OS),Windows_NT)
-  export HOST:=windows
-else
-  UNAME_S := $(shell uname -s)
-  ifeq ($(UNAME_S),Linux)
-    export HOST:=linx
-  endif
-  ifeq ($(UNAME_S),Darwin)
-    export HOST:=osx
-  endif
-endif
 
 
 # Vanilla GCC build
@@ -175,7 +135,6 @@ android-install: android-deploy
 	@echo.
 	$(ANDROID_SDK_HOME)/platform-tools/adb install -r deploy/Flow-$(config).apk
 
-
 android-run: android-install
 	@echo.
 	@echo ===== Android Run =====
@@ -186,4 +145,5 @@ android-clean: android-check
 	$(ANDROID_NDK_HOME)/ndk-build -C android $(ANDROID-MAKEFLAGS) clean
 
 .PHONY: purge
-purge: clean em-clean android-clean
+purge:
+	$(call c-rmr,$(BIN-DIR) $(DEPLOY-DIR))

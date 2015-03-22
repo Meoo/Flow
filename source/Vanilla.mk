@@ -1,4 +1,6 @@
 
+include ../Platform.mk
+
 CXXFLAGS := -Wall -g
 LDFLAGS :=
 
